@@ -17,3 +17,20 @@ syntax | function | function name
 syntax | function | function name
 --- | --- | ---
 `Recurse f g` | `f (k, x1,...,xm) -> if k == 0 then f(x1,...,xm) else g(k-1, f(k-1, x1,...,xm), x1,...,xm)` | recursive function
+
+## Example
+### Addition
+```hs
+Recurse (P 1 1) (Compose S [P 2 3])
+```
+### Multiplication
+```hs
+Recurse (Recurse C0 (P 2 2)) (Compose (Recurse (P 1 1) (Compose S [P 2 3])) [P 3 3, P 2 3])
+```
+
+## Program usage
+This repo hosts an implementation for this language. You can download it from the **release** section.
+### Command-line
+`$ ./prf function_file.prf`
+
+The program will then read function arguments from the standard input.
