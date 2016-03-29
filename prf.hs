@@ -60,22 +60,36 @@ exec (Compose f gs) args = exec f $ map (flip exec args) gs
 exec (Recurse f g)  (0:args) = exec f args
 exec (Recurse f g)  (n:args) = let prev = exec (Recurse f g) ((n-1):args)
                                in exec g (n:prev:args)
-exec prog args = traceShow (prog,args) (-1) -- Invalid Program
+exec prog args = traceShow (prog,args) (-1) -- Invalid arguments for this Program
 
-getInputs :: Int -> IO [Int]
-getInputs n = sequence (replicate n (readLn::IO Int))
+getInputs :: String -> [[Int]]
+getInputs = map (map read . words) . lines
+
+multiExec :: Prf -> [[Int]] -> [Maybe Int]
+multiExec pgm intss =
+  let
+    ar = arity pgm
+    mapper ints | length ints == ar = Just (exec pgm ints)
+    mapper ints | otherwise         = Nothing
+  in map mapper intss
 
 main = do
   fname <- getArgs
   progtxt <- readFile (fname !! 0)
   let
     prog = (read progtxt :: Prf)
+    ar   = arity prog
     errs = check prog
    in
     if length errs > 0
       then  do
         putStrLn "The following errors were found in your program: "
         sequence_ $ map (putStrLn.show) errs
+        return 1
       else do
-        ins <- getInputs (arity prog)
-        print $ exec prog ins
+        inputs <- getContents
+        sequence_ $
+          map (putStrLn . (fromMaybe "Invalid number of arguments").((Just . show) =<<)) $
+          multiExec prog $
+          getInputs inputs
+        return 0
