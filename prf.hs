@@ -59,7 +59,7 @@ exec (P i n) args | n == length args = args !! (i - 1)
 exec (Compose f gs) args = exec f $ map (flip exec args) gs
 exec (Recurse f g)  (0:args) = exec f args
 exec (Recurse f g)  (n:args) = let prev = exec (Recurse f g) ((n-1):args)
-                               in exec g (n:prev:args)
+                               in exec g ((n-1):prev:args)
 exec prog args = traceShow (prog,args) (-1) -- Invalid arguments for this Program
 
 getInputs :: String -> [[Int]]
