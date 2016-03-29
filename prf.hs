@@ -89,7 +89,7 @@ main = do
       else do
         inputs <- getContents
         sequence_ $
-          map (putStrLn . (fromMaybe "Invalid number of arguments").((Just . show) =<<)) $
+          map (putStrLn . (fromMaybe ("The function expects "++(show ar)++" arguments!")).((Just . show) =<<)) $
           multiExec prog $
           getInputs inputs
         return 0
