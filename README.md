@@ -28,6 +28,8 @@ Recurse (P 1 1) (Compose S [P 2 3])
 Recurse (Recurse C0 (P 2 2)) (Compose (Recurse (P 1 1) (Compose S [P 2 3])) [P 3 3, P 2 3])
 ```
 
+You'll find more examples in the [`examples/`](https://github.com/lovasoa/prf/tree/master/examples) directory.
+
 ## Program usage
 This repo hosts an implementation for this language. You can download it from the **release** section.
 ### Command-line
