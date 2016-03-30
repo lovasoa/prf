@@ -3,6 +3,7 @@ import Text.ParserCombinators.ReadP
 import Data.Char
 import Data.Maybe
 import Control.Monad
+import Debug.Trace
 
 data Prf = C0 | S | P Int Int |
             Compose Prf [Prf] | 
@@ -79,11 +80,14 @@ replaceNestedVars vars fun = let
   in flip replaceVars fun $ foldl folder [] vars
 
 parse :: String -> Prf
-parse codetxt = let parses = readP_to_S pgm codetxt in
+parse codetxt = let
+    parses = readP_to_S pgm codetxt
+  in
   if parses == [] then
     error "Invalid Syntax!"
-  else
-    uncurry replaceNestedVars $ fst $ last parses
+  else let (parsed, rest) = last parses in
+    if rest == "" then uncurry replaceNestedVars parsed
+    else error ("Syntax error before: «" ++ (take 10 rest) ++ " [...]».")
 
 main = do
   inp <- getContents
