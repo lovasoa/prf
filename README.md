@@ -8,24 +8,30 @@ syntax | function | function name
 --- | --- | ---
 `C0` | `() -> 0` | null constant
 `S`  | `(x) -> x+1` | successor function
-`P i n` | `(x1, x2, ... , xn) -> xi` | projector
+`Pi:n`|  `(x1, x2, ... , xn) -> xi` | projector
 ### Function composition
 syntax | function | function name
 --- | --- | ---
-`Compose f [g1, g2,..., gn]` | `(x1,...,xm) -> f(g1(x1,...,xm),... ,gn(x1,...,xm))` | function composition
+`f(g1, g2,..., gn)` | `(x1,...,xm) -> f(g1(x1,...,xm),... ,gn(x1,...,xm))` | function composition
 ### Recursive function definition
 syntax | function | function name
 --- | --- | ---
-`Recurse f g` | `f (k, x1,...,xm) -> if k == 0 then f(x1,...,xm) else g(k-1, f(k-1, x1,...,xm), x1,...,xm)` | recursive function
+`{f|g}` | `f (k, x1,...,xm) -> if k == 0 then f(x1,...,xm) else g(k-1, f(k-1, x1,...,xm), x1,...,xm)` | recursive function
 
 ## Example
 ### Addition
 ```hs
-Recurse (P 1 1) (Compose S [P 2 3])
+identity = P1:1
+addition = { identity | S(P2:3) }
+addition
 ```
 ### Multiplication
 ```hs
-Recurse (Recurse C0 (P 2 2)) (Compose (Recurse (P 1 1) (Compose S [P 2 3])) [P 3 3, P 2 3])
+identity = P1:1
+addition = { identity | S(P2:3) }
+null = { C0 | P2:2 }
+multiplication = { null | addition(P2:3,P3:3) }
+multiplication
 ```
 
 You'll find more examples in the [`examples/`](https://github.com/lovasoa/prf/tree/master/examples) directory.
