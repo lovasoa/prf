@@ -63,11 +63,21 @@ varBind = do
   p <- funct
   return (name, p)
 
+comment = do
+  char '#'
+  munch (/='\n')
+
+pgmLine = do
+  var <- option Nothing (varBind >>= return . return)
+  optional comment
+  char '\n'
+  return var
+
 pgm = do
-  vars <- sepBy varBind (char '\n')
+  vars <- many pgmLine
   res <- funct
   skipSpaces
-  return (vars, res)
+  return (catMaybes vars, res)
 
 replaceVars vars fun = case fun of
   Fun s        -> fromMaybe (Fun s) (lookup s vars)
