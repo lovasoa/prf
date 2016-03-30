@@ -1,14 +1,12 @@
-module Prf where
+module Prf (Err, Prf, parse, arity, check, exec, multiExec) where
 import qualified PrfParse
-import System.IO
-import System.Environment
 import Data.Maybe
 import Debug.Trace
 
 data Prf = C0 | S | P Int Int |
             Compose Prf [Prf] | 
             Recurse Prf Prf
-            deriving (Show, Read)
+            deriving (Show, Read, Eq)
 
 data Err = EProj Int Int | EComp Int Int | ERecur Int Int | ECompList [Int]
 instance Show Err where
@@ -63,9 +61,6 @@ exec (Recurse f g)  (n:args) = let prev = exec (Recurse f g) ((n-1):args)
                                in exec g ((n-1):prev:args)
 exec prog args = traceShow (prog,args) (-1) -- Invalid arguments for this Program
 
-getInputs :: String -> [[Int]]
-getInputs = map (map read . words) . lines
-
 multiExec :: Prf -> [[Int]] -> [Maybe Int]
 multiExec pgm intss =
   let
@@ -78,27 +73,10 @@ fromParse :: PrfParse.Prf -> Prf
 fromParse f = case f of
   PrfParse.C0 -> C0
   PrfParse.S  -> S
+  PrfParse.P a b  -> P a b
   PrfParse.Compose f gs -> Compose (fromParse f) (map fromParse gs)
   PrfParse.Recurse f g  -> Recurse (fromParse f) (fromParse g)
   PrfParse.Fun fname    -> error ("No such function: "++fname)
 
-main = do
-  fname <- getArgs
-  progtxt <- readFile (fname !! 0)
-  let
-    prog = fromParse $ PrfParse.parse progtxt
-    ar   = arity prog
-    errs = check prog
-   in
-    if length errs > 0
-      then  do
-        putStrLn "The following errors were found in your program: "
-        sequence_ $ map (putStrLn.show) errs
-        return 1
-      else do
-        inputs <- getContents
-        sequence_ $
-          map (putStrLn . (fromMaybe ("The function expects "++(show ar)++" arguments!")).((Just . show) =<<)) $
-          multiExec prog $
-          getInputs inputs
-        return 0
+parse = fromParse . PrfParse.parse
+

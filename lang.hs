@@ -8,7 +8,7 @@ data Prf = C0 | S | P Int Int |
             Compose Prf [Prf] | 
             Recurse Prf Prf |
             Fun String
-            deriving (Show, Read)
+            deriving (Show, Read, Eq)
 rConst name val = do
   string name
   return val
@@ -20,7 +20,7 @@ rFunName funfun = do
 rProj = do
   char 'P'
   i <- munch1 isDigit
-  char ','
+  char ':'
   n <- munch1 isDigit
   return $ P (read i) (read n)
 
@@ -28,13 +28,14 @@ rComp = do
   funct1 <- functSimple
   char '('
   args <- sepBy funct (char ',')
+  char ')'
   return $ Compose funct1 args
 
 rRec = do
   char '{'
-  p1 <- functSimple
+  p1 <- funct
   char '|'
-  p2 <- functSimple
+  p2 <- funct
   char '}'
   return $ Recurse p1 p2
 
@@ -78,7 +79,11 @@ replaceNestedVars vars fun = let
   in flip replaceVars fun $ foldl folder [] vars
 
 parse :: String -> Prf
-parse = uncurry replaceNestedVars . fst . last . readP_to_S pgm
+parse codetxt = let parses = readP_to_S pgm codetxt in
+  if parses == [] then
+    error "Invalid Syntax!"
+  else
+    uncurry replaceNestedVars $ fst $ last parses
 
 main = do
   inp <- getContents
