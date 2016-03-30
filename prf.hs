@@ -1,4 +1,5 @@
-import Text.ParserCombinators.ReadP
+module Prf where
+import qualified PrfParse
 import System.IO
 import System.Environment
 import Data.Maybe
@@ -73,11 +74,19 @@ multiExec pgm intss =
     mapper ints | otherwise         = Nothing
   in map mapper intss
 
+fromParse :: PrfParse.Prf -> Prf
+fromParse f = case f of
+  PrfParse.C0 -> C0
+  PrfParse.S  -> S
+  PrfParse.Compose f gs -> Compose (fromParse f) (map fromParse gs)
+  PrfParse.Recurse f g  -> Recurse (fromParse f) (fromParse g)
+  PrfParse.Fun fname    -> error ("No such function: "++fname)
+
 main = do
   fname <- getArgs
   progtxt <- readFile (fname !! 0)
   let
-    prog = (read progtxt :: Prf)
+    prog = fromParse $ PrfParse.parse progtxt
     ar   = arity prog
     errs = check prog
    in
