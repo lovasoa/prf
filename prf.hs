@@ -56,9 +56,8 @@ exec C0 _ = 0
 exec S [n] = n + 1
 exec (P i n) args | n == length args = args !! (i - 1)
 exec (Compose f gs) args = exec f $ map (flip exec args) gs
-exec (Recurse f g)  (0:args) = exec f args
-exec (Recurse f g)  (n:args) = let prev = exec (Recurse f g) ((n-1):args)
-                               in exec g ((n-1):prev:args)
+exec (Recurse f g)  (n:args) = let folder res i = exec g (i:res:args)
+                               in foldl folder (exec f args) [0..(n-1)]
 exec prog args = traceShow (prog,args) (-1) -- Invalid arguments for this Program
 
 multiExec :: Prf -> [[Int]] -> [Maybe Int]
