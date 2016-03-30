@@ -47,26 +47,26 @@ brackets p = do
   return r
 
 functSimple = do
-  skipSpaces
   res <- rConst "C0" C0 +++ rConst "S" S +++ rProj +++ rFunName Fun +++ brackets funct
-  skipSpaces
   return res
 
 funct = do
+  skipSpaces
   res <- functSimple +++ rComp +++ rRec
+  skipMany (choice [char ' ', char '\t'])
   return res
 
 varBind = do
   name <- rFunName id
   skipSpaces
   char '='
-  skipSpaces
   p <- funct
   return (name, p)
 
 pgm = do
   vars <- sepBy varBind (char '\n')
   res <- funct
+  skipSpaces
   return (vars, res)
 
 replaceVars vars fun = case fun of
@@ -87,7 +87,7 @@ parse codetxt = let
     error "Invalid Syntax!"
   else let (parsed, rest) = last parses in
     if rest == "" then uncurry replaceNestedVars parsed
-    else error ("Syntax error before: «" ++ (take 10 rest) ++ " [...]».")
+    else error ("Syntax error after: «" ++ (take 10 rest) ++ " [...]».")
 
 main = do
   inp <- getContents
