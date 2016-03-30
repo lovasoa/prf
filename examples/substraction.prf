@@ -1,1 +1,5 @@
-Compose (Recurse (P 1 1) (Compose (Recurse C0 (P 1 2)) [P 2 3])) [P 2 2, P 1 2]
+precedent = {C0 | P1:2}
+null = { C0 | P2:2 }
+rsub = { P1:1 | precedent(P2:3) }
+sub  = rsub(P2:2, P1:2)
+sub
