@@ -15,8 +15,9 @@ rConst name val = do
   return val
 
 rFunName funfun = do
-  s <- munch1 isLower
-  return $ funfun s
+  s0 <- satisfy isLower
+  s1 <- munch isAlphaNum
+  return $ funfun (s0:s1)
 
 rProj = do
   char 'P'
