@@ -1,0 +1,5 @@
+lte = { P1:1 | ({C0|P1:2})(P2:3) } # Less Than or Equal
+if  = { P2:2 | P3:4} # if(condition, yes, no) = condition ? yes : no
+min = if(lte, P1:2, P2:2)
+max = if(lte, P2:2, P1:2)
+max

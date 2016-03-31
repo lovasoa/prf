@@ -1,0 +1,10 @@
+identity = P1:1
+addition = { identity | S(P2:3) }
+
+null = { C0 | P2:2 }
+multiplication = { null | addition(P2:3,P3:3) }
+
+rpower = { S(null) | multiplication(P2:3,P3:3) }
+power = rpower(P2:2,P1:2) # power(a,b) = rpower(b,a)
+
+power

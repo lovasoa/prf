@@ -1,5 +1,5 @@
 precedent = {C0 | P1:2}
 null = { C0 | P2:2 }
-rsub = { P1:1 | precedent(P2:3) }
-sub  = rsub(P2:2, P1:2)
-sub
+substraction = { P1:1 | precedent(P2:3) }
+
+substraction(P2:2,P1:2)

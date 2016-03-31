@@ -1,0 +1,6 @@
+identity = P1:1
+addition = { identity | S(P2:3) }
+null = { C0 | P2:2 }
+multiplication = { null | addition(P2:3,P3:3) }
+factorial = { S(C0) | multiplication(S(P1:2),P2:2) } 
+factorial

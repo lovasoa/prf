@@ -1,0 +1,24 @@
+identity = P1:1
+addition = { identity | S(P2:3) }
+null = { C0 | P2:2 }
+null2 = null(P1:2)
+multiplication = { null | addition(P2:3,P3:3) }
+isNull = { S(C0) | null2 }
+and    = { null | P3:3 } 
+# Substraction : (a,b) -> if a>=b then 0 else b-a
+sub    = { P1:1 | ({C0|P1:2})(P2:3) }
+# (a,b) -> if a == b then 1 else 0
+equals = and(isNull(sub), isNull(sub(P2:2,P1:2)))
+# if(condition, yes, no) = condition ? yes : no
+if  = { P2:2 | P3:4} 
+# div(a+1,b) = if (div(a,b)+1)*b == a+1 then div(a,b)+1 else div(a,b)
+div = { null | if(
+                    equals(
+                      S(P1:3),
+                      addition(multiplication(P2:3,P3:3), P3:3)),
+                    
+                    S(P2:3),
+                    P2:3
+                  )
+      }
+div
