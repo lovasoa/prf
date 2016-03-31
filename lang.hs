@@ -29,21 +29,29 @@ rProj = do
 rComp = do
   funct1 <- functSimple
   char '('
-  args <- sepBy funct (char ',')
+  skipSpaces
+  args <- sepBy funct (skipSpaces >> char ',' >> skipSpaces)
+  skipSpaces
   char ')'
   return $ Compose funct1 args
 
 rRec = do
   char '{'
+  skipSpaces
   p1 <- funct
+  skipSpaces
   char '|'
+  skipSpaces
   p2 <- funct
+  skipSpaces
   char '}'
   return $ Recurse p1 p2
 
 brackets p = do
   char '('
+  skipSpaces
   r <- p
+  skipSpaces
   char ')'
   return r
 
@@ -52,15 +60,14 @@ functSimple = do
   return res
 
 funct = do
-  skipSpaces
   res <- functSimple +++ rComp +++ rRec
-  skipMany (choice [char ' ', char '\t'])
   return res
 
 varBind = do
   name <- rFunName id
   skipSpaces
   char '='
+  skipSpaces
   p <- funct
   return (name, p)
 
@@ -70,6 +77,7 @@ comment = do
 
 pgmLine = do
   var <- option Nothing (varBind >>= return . return)
+  munch (`elem` "\t ")
   optional comment
   char '\n'
   return var
