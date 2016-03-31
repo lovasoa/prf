@@ -1,0 +1,13 @@
+null = { C0 | P2:2 }
+
+# Substraction : (a,b) -> if a>=b then 0 else b-a
+sub    = { P1:1 | ({C0|P1:2})(P2:3) }
+
+# if(condition, yes, no) = condition ? yes : no
+if  = { P2:2 | P3:4} 
+
+# (n+1) % m = if (n%m)+1 == m then 0 else n%m + 1
+mod = {null | if(sub(S(P2:3),P3:3),
+                  S(P2:3),
+                  null(P3:3) )}
+mod

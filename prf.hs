@@ -51,6 +51,15 @@ check (Recurse f g)  = check f ++
                         else [ERecur (arity f) (arity g)]
 check _ = []
 
+dependOnArg :: Int -> Prf -> Bool
+dependOnArg _ C0 = False
+dependOnArg _ S  = True
+dependOnArg k (P i n) = k + 1 == i
+dependOnArg k (Compose f gs) = any (dependOnArg k) gs
+dependOnArg 0 (Recurse _ (P 2 _)) = False
+dependOnArg 0 g = True
+dependOnArg k (Recurse f g) = dependOnArg (k-1) f && dependOnArg (k+1) g
+
 exec :: Prf -> [Int] -> Int
 exec C0 _ = 0
 exec S [n] = n `seq` n + 1
@@ -66,7 +75,8 @@ multiExec :: Prf -> [[Int]] -> [Maybe Int]
 multiExec pgm intss =
   let
     ar = arity pgm
-    mapper ints | length ints == ar = Just (exec pgm ints)
+    executor = exec pgm
+    mapper ints | length ints == ar = Just (executor ints)
     mapper ints | otherwise         = Nothing
   in map mapper intss
 
