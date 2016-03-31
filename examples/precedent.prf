@@ -1,3 +1,2 @@
 prec = { C0 | P1:2 } # n -> n-1
-p = prec
 prec
