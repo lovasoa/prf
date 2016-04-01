@@ -1,0 +1,21 @@
+null   = { C0 | P2:2 }
+minus1 = { C0 | P1:2 }
+
+# if(condition, yes, no) = condition ? yes : no
+if  = { P2:2 | P3:4} 
+or  = { P1:1 | S(P1:3) }
+and = { null | P3:3 }
+isNull = { S(C0) | null(P1:2) }
+
+# Substraction : (a,b) -> if a>=b then 0 else b-a
+sub    = { P1:1 | ({C0|P1:2})(P2:3) }
+
+# (n+1) % m = if (n%m)+1 == m then 0 else n%m + 1
+mod = {null | if(sub(S(P2:3),P3:3),
+                  S(P2:3),
+                  null(P3:3) )}
+
+# hasDivisorUnder(n,a) : is there a number k, such that 1<k<=n and k divides a
+hasDivisorUnder = { null | or(P2:3, and(P1:3, isNull(mod(P3:3,S(P1:3))))) }
+isPrime = isNull(hasDivisorUnder(minus1, P1:1))
+isPrime
