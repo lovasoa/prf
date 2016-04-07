@@ -16,7 +16,7 @@ syntax | function | function name
 ### Recursive function definition
 syntax | function | function name
 --- | --- | ---
-`f = {g|h}` | `f(0, x1,...,xm) = g(x1,...,xm)` and `f(k+1, x1,...,xm) = h(k, f(k, x1,...,xm), x1,...,xm)` | recursive function
+`f = {g|h}` | `f(0, x1,...,xm) = g(x1,...,xm)` <br> `f(k+1, x1,...,xm) = h(k, f(k, x1,...,xm), x1,...,xm)` | recursive function
 
 ## Example
 ### Addition
